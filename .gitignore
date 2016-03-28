@@ -1,5 +1,6 @@
 /settings.json
-/lyrics/*
+/lyrics/*/*
+/lyrics/*.epub
 !/lyrics/timing
 /audio/*
 
