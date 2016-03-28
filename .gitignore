@@ -1,7 +1,7 @@
 /settings.json
 /lyrics/*/*
 /lyrics/*.epub
-!/lyrics/timing
+!/lyrics/timing/*
 /audio/*
 
 # Created by .ignore support plugin (hsz.mobi)

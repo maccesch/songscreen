@@ -49,7 +49,7 @@ from operator import attrgetter
 from PyQt5.QtCore import (pyqtSignal, QAbstractItemModel,
                           QFileInfo, qFuzzyCompare, QModelIndex, QObject, Qt,
                           QTime, QUrl, QSize, QRectF, QPropertyAnimation, QEasingCurve, QAbstractAnimation)
-from PyQt5.QtGui import QColor, QPainter, QPalette, QPen, QBrush, QFont, QFontMetricsF
+from PyQt5.QtGui import QColor, QPainter, QPalette, QPen, QBrush, QFont, QFontMetricsF, QTransform, QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -339,9 +339,11 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
         font_size = self._calc_font_size(self.h)
 
-        title_font = QFont('Sans', font_size, QFont.Bold)
-        default_font = QFont('Sans', font_size, QFont.Light)
-        heading_font = QFont('Sans', font_size * 0.7, QFont.Bold)
+        title_font = QFont('Fira Sans', font_size, QFont.Medium)
+        default_font = QFont('Fira Sans', font_size, QFont.Normal)
+        default_font.setHintingPreference(QFont.PreferFullHinting)
+        default_font.setLetterSpacing(QFont.PercentageSpacing, 99)
+        heading_font = QFont('Fira Sans', font_size * 0.7, QFont.DemiBold)
 
         default_color = QColor(0, 0, 0)
         heading_color = QColor(180, 180, 180)
@@ -358,9 +360,18 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
         def add_line(text, offset=0, font=default_font, color=default_color):
             y = self._line_height * line_index + offset + self.h * 0.2
+
+            metrics = QFontMetricsF(font)
+            text_width = metrics.width(text)
+            max_text_width = (self.w - left - left)
+            overflow = text_width - max_text_width
+
             text = scene.addText(text, font)
             text.setPos(left, y)
             text.setDefaultTextColor(color)
+
+            if overflow > 0:
+                text.setTransform(QTransform().scale(1.0 - overflow / max_text_width, 1.0))
 
         line_index = 1
         for marker in sorted(self.markers, key=attrgetter("progress")):
@@ -1061,7 +1072,7 @@ class Player(QWidget):
             self._load_audio(self._song_number)
             self._load_lyrics(self._song_number)
 
-        self.player.play()
+        # self.player.play()
 
     def _load_audio(self, song_number):
         filename = os.path.join(self.audio_path, "{:03}.m4a".format(song_number))
@@ -1074,6 +1085,8 @@ class Player(QWidget):
             else:
                 self.playlist.addMedia(QMediaContent(url))
                 self._loading_audio = True
+
+            self.player.play()
 
     def _load_lyrics(self, song_number):
         with open(os.path.join(self.lyrics_path, "{}.json".format(song_number)), 'r') as f:
@@ -1140,6 +1153,8 @@ class Player(QWidget):
                 if marker.progress == 0.0:
                     marker.progress = offset + (1 - offset) * (1 - silence_ratio) * linecount / line_total
                 linecount += marker.linecount - 1
+
+            # self.player.pause()
 
     @property
     def _should_fade_out(self):
@@ -1356,6 +1371,10 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
+
+    QFontDatabase.addApplicationFont("font/FiraSans-Regular.otf")
+    QFontDatabase.addApplicationFont("font/FiraSans-Medium.otf")
+    QFontDatabase.addApplicationFont("font/FiraSans-SemiBold.otf")
 
     player = Player()
     player.show()
