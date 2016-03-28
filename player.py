@@ -1357,18 +1357,31 @@ class Player(QWidget):
             json.dump(settings, f, indent=2)
 
     def _load_settings(self):
-        with open(self.settings_path, 'r') as f:
-            settings = json.load(f)
+        try:
+            with open(self.settings_path, 'r') as f:
+                settings = json.load(f)
 
-            if 'lyrics_screen' in settings.keys():
-                self.display_lyrics_on_screen(settings['lyrics_screen'])
+                if 'lyrics_screen' in settings.keys():
+                    self.display_lyrics_on_screen(settings['lyrics_screen'])
 
-            if 'control_window_position' in settings.keys():
-                self.move(*settings['control_window_position'])
+                if 'control_window_position' in settings.keys():
+                    self.move(*settings['control_window_position'])
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == '__main__':
     import sys
+
+    if getattr(sys, 'frozen', False):
+        # we are running in a bundle
+        frozen = 'ever so'
+        bundle_dir = sys._MEIPASS
+    else:
+        # we are running in a normal Python environment
+        bundle_dir = os.path.dirname(os.path.abspath(__file__))
+
+    os.chdir(bundle_dir)
 
     app = QApplication(sys.argv)
 
