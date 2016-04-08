@@ -73,6 +73,7 @@ class MediaProgressWidget(MarkerMixin, QAbstractSlider):
     def __init__(self):
         super(MediaProgressWidget, self).__init__()
 
+        self.setFocusPolicy(Qt.StrongFocus)
         self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
 
         self._dragging_progress = False
@@ -117,7 +118,6 @@ class MediaProgressWidget(MarkerMixin, QAbstractSlider):
 
         if self._dragging_marker is not None:
             self._dragging_marker = None
-            self.dirty = True
 
     def _update_progress(self, mouse_event):
         w = self.size().width()
@@ -131,31 +131,36 @@ class MediaProgressWidget(MarkerMixin, QAbstractSlider):
     def _update_marker(self, mouse_event):
         progress = self._dragging_marker_start_pos + \
                    (mouse_event.x() - self._dragging_marker_start_x) / self.size().width()
-        prev_progress = self._dragging_marker.progress
-        self._dragging_marker.progress = max(0.0, (min(1.0, progress)))
+        progress = max(0.0, (min(1.0, progress)))
 
-        if self._dragging_marker == self._markers[0]:
+        self._update_marker_and_adjust_following(self._dragging_marker, self._dragging_index, progress)
+
+    def _update_marker_and_adjust_following(self, update_marker, update_marker_index, progress):
+        self.dirty = True
+        prev_progress = update_marker.progress
+        update_marker.progress = progress
+        if update_marker == self._markers[0]:
             for marker in self._markers[1:]:
                 marker.progress = (marker.progress - prev_progress) / (1 - prev_progress) * \
-                                  (1 - self._dragging_marker.progress) + self._dragging_marker.progress
+                                  (1 - update_marker.progress) + update_marker.progress
 
         else:
-            prev_marker = self._markers[self._dragging_index - 1]
-            length = self._dragging_marker.progress - prev_marker.progress
-            m = self._marker_type_pattern.match(self._dragging_marker.name)
+            prev_marker = self._markers[update_marker_index - 1]
+            length = update_marker.progress - prev_marker.progress
+            m = self._marker_type_pattern.match(update_marker.name)
             marker_type = m.group(1)
 
             # TODO : this assumes that there are only 2 types of markers
             prev_marker_type = None
             prev_length = None
-            if self._dragging_index > 1:
+            if update_marker_index > 1:
                 m = self._marker_type_pattern.match(prev_marker.name)
                 prev_marker_type = m.group(1)
 
                 if marker_type != prev_marker_type:
-                    prev_length = prev_marker.progress - self._markers[self._dragging_index - 2].progress
+                    prev_length = prev_marker.progress - self._markers[update_marker_index - 2].progress
 
-            for i in range(self._dragging_index, len(self._markers) - 1):
+            for i in range(update_marker_index, len(self._markers) - 1):
                 marker = self._markers[i + 1]
                 if marker_type in marker.name:
                     marker.progress = self._markers[i].progress + length
@@ -217,3 +222,25 @@ class MediaProgressWidget(MarkerMixin, QAbstractSlider):
 
         for marker in self._markers:
             marker.draw(qp)
+
+    @property
+    def progress(self):
+        return (self.value() - self.minimum()) / (self.maximum() - self.minimum())
+
+    def set_closest_marker_to_current_progress(self):
+
+        if len(self.markers) == 0:
+            return
+
+        index = 0
+        while index < len(self.markers)-1 and self.markers[index].progress < self.progress:
+            index += 1
+
+        if index == 0:
+            self._update_marker_and_adjust_following(self.markers[0], 0, self.progress)
+            return
+
+        if abs(self.progress - self.markers[index - 1].progress) < abs(self.progress - self.markers[index].progress):
+            self._update_marker_and_adjust_following(self.markers[index - 1], index - 1, self.progress)
+        else:
+            self._update_marker_and_adjust_following(self.markers[index], index, self.progress)

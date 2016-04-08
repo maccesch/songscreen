@@ -151,7 +151,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
                 self._animation = None
                 self.setSceneRect(target_rect)
 
-    def _add_line(self, scene, line_index, left, text_str, font, color, offset=0):
+    def _add_line(self, scene, line_index, left, text_str, font, color, offset=0, align_right=False):
         y = self._line_height * line_index + offset + self.h * 0.1
 
         if line_index == 1:
@@ -164,7 +164,10 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
         if overflow <= 0:
             text = scene.addText(text_str, font)
-            text.setPos(left, y)
+            if align_right:
+                text.setPos(self.w - left - text_width, y)
+            else:
+                text.setPos(left, y)
             text.setDefaultTextColor(color)
         else:
             scale_factor = max_text_width / text_width
@@ -182,7 +185,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
                 line_index = self._add_line(scene, line_index, left, text_str[:idx], font, color, offset)
                 line_index += 1
-                line_index = self._add_line(scene, line_index, left, "       {}".format(text_str[idx:]), font, color, offset)
+                line_index = self._add_line(scene, line_index, left, "\t" + text_str[idx:], font, color,
+                                            offset - self._line_height * 0.1)
 
         return line_index
 
@@ -214,12 +218,14 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         left = self.w / 50
 
         line_index = 0
-        line_index = self._add_line(scene, line_index, left, self.title, offset=- self.h * 0.05, font=title_font, color=default_color)
+        line_index = self._add_line(scene, line_index, left, self.title, offset=- self.h * 0.05, font=title_font,
+                                    color=default_color)
 
         line_index += 1
         for marker in sorted(self.markers, key=attrgetter("progress")):
 
-            line_index = self._add_line(scene, line_index, left, marker.name, offset=self._line_height * 0.2, font=heading_font, color=heading_color)
+            line_index = self._add_line(scene, line_index, left, marker.name, offset=self._line_height * 0.2,
+                                        font=heading_font, color=heading_color)
             line_index += 1
 
             for line in marker.text.splitlines():

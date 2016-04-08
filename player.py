@@ -512,6 +512,9 @@ class Player(QWidget):
                 self.player.pause()
             elif self.player.state() in [QMediaPlayer.PausedState, QMediaPlayer.StoppedState]:
                 self.player.play()
+        elif key_event.key() == Qt.Key_M:
+            key_event.accept()
+            self.slider.set_closest_marker_to_current_progress()
 
     def _save_timings(self):
         if self.slider.dirty:
