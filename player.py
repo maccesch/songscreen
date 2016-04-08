@@ -195,21 +195,19 @@ class Player(QWidget):
 
         rect = desktop.availableGeometry(screen_number)
 
-        if screen_number != desktop.screenNumber(self):
-            self.songtext_widget.setWindowFlags(Qt.FramelessWindowHint)
-            self.songtext_widget.show()
-            self.songtext_widget.hide()
-            self.songtext_widget.move(rect.x(), rect.y())
-            self.songtext_widget.resize(rect.width(), rect.height())
-            self.songtext_widget.showFullScreen()
-        else:
-            self.songtext_widget.setWindowFlags(Qt.WindowTitleHint)
-            self.songtext_widget.show()
-            self.songtext_widget.hide()
-            self.songtext_widget.move(rect.x(), rect.y())
-            self.songtext_widget.resize(self.songtext_widget.minimumSize())
-
-            self.songtext_widget.show()
+        for _ in range(3):
+            if screen_number != desktop.screenNumber(self):
+                self.songtext_widget.setWindowFlags(Qt.FramelessWindowHint)
+                self.songtext_widget.hide()
+                self.songtext_widget.move(rect.x(), rect.y())
+                self.songtext_widget.resize(rect.width(), rect.height())
+                self.songtext_widget.showFullScreen()
+            else:
+                self.songtext_widget.setWindowFlags(Qt.WindowTitleHint)
+                self.songtext_widget.hide()
+                self.songtext_widget.move(rect.x(), rect.y())
+                self.songtext_widget.resize(self.songtext_widget.minimumSize())
+                self.songtext_widget.show()
 
         self.screen_select_widget.active_screen = screen_number
 
