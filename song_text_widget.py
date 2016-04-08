@@ -42,6 +42,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self._extra_lines_after = []
         self._first_lyrics_line_y = 0
 
+        self._covered = True
+
         self.setMinimumHeight(9 * 50)
         self.setMinimumWidth(16 * 50)
 
@@ -138,13 +140,16 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
             y = max(0, y)
             target_rect = QRectF(0, y, self.w, self.h)
 
-            self._animation = QPropertyAnimation(self, b"sceneRect")
-            self._animation.setDuration(3000)
-            self._animation.setStartValue(self.sceneRect())
-            self._animation.setEndValue(target_rect)
-            self._animation.setEasingCurve(QEasingCurve.InOutQuad)
-            self._animation.start()
-            # self.setSceneRect(QRectF(0, self.sceneRect().y() + self._line_height * self.scroll_lines, w, h))
+            if not self._covered:
+                self._animation = QPropertyAnimation(self, b"sceneRect")
+                self._animation.setDuration(3000)
+                self._animation.setStartValue(self.sceneRect())
+                self._animation.setEndValue(target_rect)
+                self._animation.setEasingCurve(QEasingCurve.InOutQuad)
+                self._animation.start()
+            else:
+                self._animation = None
+                self.setSceneRect(target_rect)
 
     def _add_line(self, scene, line_index, left, text_str, font, color, offset=0):
         y = self._line_height * line_index + offset + self.h * 0.1
@@ -242,11 +247,15 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
             self._document_cover.setOpacity(0.0)
             scene_rect_y = prev_scene_rect_y / prev_document_height * self._document_height
 
+        self._covered = not keep_progress
+
         self.setSceneRect(QRectF(0, scene_rect_y, self.w, self.h))
 
         self.fitInView(QRectF(0, 0, self.w, self.h), Qt.KeepAspectRatio)
 
     def fade_in(self):
+        self._covered = False
+
         self._document_cover_animation = QPropertyAnimation(self._document_cover, b"opacity")
 
         self._document_cover_animation.setDuration(1000)
@@ -258,11 +267,18 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
     def fade_out(self):
         self._document_cover_animation = QPropertyAnimation(self._document_cover, b"opacity")
 
+        self._document_cover_animation.finished.connect(self._fade_out_finished)
+
         self._document_cover_animation.setDuration(1000)
         self._document_cover_animation.setStartValue(0)
         self._document_cover_animation.setEndValue(1)
         self._document_cover_animation.setEasingCurve(QEasingCurve.InOutQuad)
         self._document_cover_animation.start()
+
+    def _fade_out_finished(self):
+        self._covered = True
+        self._animation = None
+        self.progress = 0
 
     def _redraw_scene(self):
         self.viewport().update()

@@ -81,7 +81,7 @@ class Player(QWidget):
 
         controls.play.connect(self.player.play)
         controls.pause.connect(self.player.pause)
-        # controls.stop.connect(self.player.stop)
+        controls.stop.connect(self.stop_clicked)
         # controls.stop.connect(self.videoWidget.update)
         # controls.next.connect(self.playlist.next)
         # controls.previous.connect(self.previousClicked)
@@ -328,9 +328,12 @@ class Player(QWidget):
             self.songtext_widget.progress = progress / self.duration
 
             if self._should_fade_out:
-                if not self._lyrics_fading:
-                    self._lyrics_fading = True
-                    self.songtext_widget.fade_out()
+                self._fade_out_lyrics()
+
+    def _fade_out_lyrics(self):
+        if not self._lyrics_fading:
+            self._lyrics_fading = True
+            self.songtext_widget.fade_out()
 
     def metaDataChanged(self):
         if self.player.isMetaDataAvailable():
@@ -368,6 +371,10 @@ class Player(QWidget):
                 self._finished_song = False
                 self._lyrics_fading = False
                 self.songtext_widget.fade_in()
+
+    def stop_clicked(self):
+        self.player.stop()
+        self._fade_out_lyrics()
 
     def statusChanged(self, status):
         self.handleCursor(status)

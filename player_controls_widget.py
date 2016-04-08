@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QToolButton, QStyle, QSlider, QHBoxLayout
 class PlayerControlsWidget(QWidget):
     play = pyqtSignal()
     pause = pyqtSignal()
-    # stop = pyqtSignal()
+    stop = pyqtSignal()
     # next = pyqtSignal()
     # previous = pyqtSignal()
     changeVolume = pyqtSignal(int)
@@ -36,10 +36,23 @@ class PlayerControlsWidget(QWidget):
             }
         """)
 
-        # self.stopButton = QToolButton(clicked=self.stop)
-        # self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-        # self.stopButton.setEnabled(False)
-        #
+        self.stopButton = QToolButton(clicked=self.stop)
+        self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
+        self.stopButton.setEnabled(False)
+
+        self.stopButton.setStyleSheet("""
+            QToolButton {
+                background-color: #c3c3c3;
+                border: none;
+                border-radius: 3px;
+                padding: 4px 8px 3px;
+            }
+
+            QToolButton:pressed {
+                background-color: #c8c8c8;
+            }
+        """)
+
         # self.nextButton = QToolButton(clicked=self.next)
         # self.nextButton.setIcon(
         #     self.style().standardIcon(QStyle.SP_MediaSkipForward))
@@ -64,9 +77,9 @@ class PlayerControlsWidget(QWidget):
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        # layout.addWidget(self.stopButton)
         # layout.addWidget(self.previousButton)
         layout.addWidget(self.playButton)
+        layout.addWidget(self.stopButton)
         # layout.addWidget(self.nextButton)
         # layout.addWidget(self.muteButton)
         layout.addWidget(self.volumeSlider)
@@ -81,15 +94,15 @@ class PlayerControlsWidget(QWidget):
             self.playerState = state
 
             if state == QMediaPlayer.StoppedState:
-                # self.stopButton.setEnabled(False)
+                self.stopButton.setEnabled(False)
                 self.playButton.setIcon(
                     self.style().standardIcon(QStyle.SP_MediaPlay))
             elif state == QMediaPlayer.PlayingState:
-                # self.stopButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
                 self.playButton.setIcon(
                     self.style().standardIcon(QStyle.SP_MediaPause))
             elif state == QMediaPlayer.PausedState:
-                # self.stopButton.setEnabled(True)
+                self.stopButton.setEnabled(True)
                 self.playButton.setIcon(
                     self.style().standardIcon(QStyle.SP_MediaPlay))
 
