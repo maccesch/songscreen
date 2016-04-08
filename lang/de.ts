@@ -31,19 +31,24 @@
 <context>
     <name>SettingsWidget</name>
     <message>
-        <location filename="settings_widget.py" line="25"/>
+        <location filename="settings_widget.py" line="27"/>
         <source>Font size</source>
         <translation>Schriftgröße</translation>
     </message>
     <message>
-        <location filename="settings_widget.py" line="34"/>
+        <location filename="settings_widget.py" line="36"/>
         <source>Scroll step size in lines</source>
         <translation>Scroll-Schrittgröße in Zeilen</translation>
     </message>
     <message>
-        <location filename="settings_widget.py" line="40"/>
+        <location filename="settings_widget.py" line="42"/>
         <source>Close</source>
         <translation>Schließen</translation>
+    </message>
+    <message>
+        <location filename="settings_widget.py" line="15"/>
+        <source>SongScreen Settings</source>
+        <translation>SongScreen Einstellungen</translation>
     </message>
 </context>
 </TS>

@@ -12,6 +12,8 @@ class SettingsWidget(QDialog):
 
         self.settings = settings
 
+        self.setWindowTitle(self.tr("SongScreen Settings"))
+
         main_layout = QVBoxLayout()
 
         form_layout = QFormLayout()

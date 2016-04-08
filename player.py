@@ -4,7 +4,7 @@ import json
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
-                          QTime, QUrl, QObject, QEvent, QTranslator)
+                          QTime, QUrl, QObject, QEvent, QTranslator, QLocale)
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
@@ -572,7 +572,7 @@ if __name__ == '__main__':
     QFontDatabase.addApplicationFont("font/FiraSans-SemiBold.otf")
 
     translator = QTranslator()
-    translator.load("de", "lang")
+    translator.load(QLocale(), "", "", "lang")
     app.installTranslator(translator)
 
     player = Player()
