@@ -436,7 +436,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
     def _calc_font_size(self, h):
         font_size = h // (self.lines_per_screen * self.line_height_factor * 1.4)
-        return font_size
+        return 35 #font_size
 
 
 class MediaMarker(QObject):
@@ -979,8 +979,18 @@ class Player(QWidget):
         self.screen_select_widget.screen_selected.connect(self.display_lyrics_on_screen)
         self.screen_select_widget.active_screen = QApplication.desktop().screenNumber(self.songtext_widget)
 
+        self.settings_button = QPushButton()
+        self.settings_button.setText("Einstellungen...")
+
+        sidebarLayout = QVBoxLayout()
+        sidebarLayout.setContentsMargins(10, 11, 0, 2);
+
+        sidebarLayout.addWidget(self.settings_button)
+        sidebarLayout.addStretch(1);
+        sidebarLayout.addWidget(self.screen_select_widget)
+
         displayLayout.addWidget(self.song_select_widget)
-        displayLayout.addWidget(self.screen_select_widget)
+        displayLayout.addLayout(sidebarLayout)
 
         controlLayout = QHBoxLayout()
         controlLayout.setContentsMargins(0, 0, 0, 0)
@@ -1357,18 +1367,31 @@ class Player(QWidget):
             json.dump(settings, f, indent=2)
 
     def _load_settings(self):
-        with open(self.settings_path, 'r') as f:
-            settings = json.load(f)
+        try:
+            with open(self.settings_path, 'r') as f:
+                settings = json.load(f)
 
-            if 'lyrics_screen' in settings.keys():
-                self.display_lyrics_on_screen(settings['lyrics_screen'])
+                if 'lyrics_screen' in settings.keys():
+                    self.display_lyrics_on_screen(settings['lyrics_screen'])
 
-            if 'control_window_position' in settings.keys():
-                self.move(*settings['control_window_position'])
+                if 'control_window_position' in settings.keys():
+                    self.move(*settings['control_window_position'])
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == '__main__':
     import sys
+
+    if getattr(sys, 'frozen', False):
+        # we are running in a bundle
+        frozen = 'ever so'
+        bundle_dir = sys._MEIPASS
+    else:
+        # we are running in a normal Python environment
+        bundle_dir = os.path.dirname(os.path.abspath(__file__))
+
+    os.chdir(bundle_dir)
 
     app = QApplication(sys.argv)
 
