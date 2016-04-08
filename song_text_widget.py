@@ -246,6 +246,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         if keep_progress:
             self._document_cover.setOpacity(0.0)
             scene_rect_y = prev_scene_rect_y / prev_document_height * self._document_height
+        else:
+            self._animation = None
 
         self._covered = not keep_progress
 

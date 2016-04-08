@@ -4,7 +4,7 @@ import json
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
-                          QTime, QUrl)
+                          QTime, QUrl, QObject, QEvent)
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
@@ -29,6 +29,8 @@ class Player(QWidget):
 
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)
+
+        self.setFocusPolicy(Qt.StrongFocus)
 
         self.colorDialog = None
         self.trackInfo = ""
@@ -502,6 +504,14 @@ class Player(QWidget):
         self._save_settings()
         self.songtext_widget.close()
         self.settings_widget.close()
+
+    def keyPressEvent(self, key_event):
+        if key_event.key() == Qt.Key_Space:
+            key_event.accept()
+            if self.player.state() == QMediaPlayer.PlayingState:
+                self.player.pause()
+            elif self.player.state() in [QMediaPlayer.PausedState, QMediaPlayer.StoppedState]:
+                self.player.play()
 
     def _save_timings(self):
         if self.slider.dirty:
