@@ -39,6 +39,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self.title = ""
 
         self._linecount = 0
+        self._extra_lines_after = []
         self._first_lyrics_line_y = 0
 
         self.setMinimumHeight(9 * 50)
@@ -118,12 +119,17 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
             return
 
         vertical_offset_bias = self._line_height - self._first_lyrics_line_y
-        vertical_offset = self._scroll_progress * self._document_height
+        vertical_offset = self._scroll_progress * \
+                          (self._document_height - len(self._extra_lines_after) * self._line_height)
 
         if vertical_offset <= vertical_offset_bias:
             vertical_offset = 0
         else:
-            vertical_offset = min(vertical_offset - vertical_offset_bias, self._linecount * self._line_height)
+            vertical_offset = min(vertical_offset - vertical_offset_bias, self._document_height)
+
+        current_line_index = vertical_offset / self._line_height
+        extra_line_count = len(tuple(filter(lambda i: i < current_line_index, self._extra_lines_after)))
+        vertical_offset += self._line_height * extra_line_count
 
         diff = self.sceneRect().y() - vertical_offset
         if abs(diff) > self._line_height * self.scroll_lines:
@@ -139,6 +145,41 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
             self._animation.setEasingCurve(QEasingCurve.InOutQuad)
             self._animation.start()
             # self.setSceneRect(QRectF(0, self.sceneRect().y() + self._line_height * self.scroll_lines, w, h))
+
+    def _add_line(self, scene, line_index, left, text_str, font, color, offset=0):
+        y = self._line_height * line_index + offset + self.h * 0.1
+
+        if line_index == 1:
+            self._first_lyrics_line_y = y
+
+        metrics = QFontMetricsF(font)
+        text_width = metrics.width(text_str)
+        max_text_width = (self.w - left - left)
+        overflow = text_width - max_text_width
+
+        if overflow <= 0:
+            text = scene.addText(text_str, font)
+            text.setPos(left, y)
+            text.setDefaultTextColor(color)
+        else:
+            scale_factor = max_text_width / text_width
+            if scale_factor >= 0.9:
+                text = scene.addText(text_str, font)
+                text.setPos(left, y)
+                text.setDefaultTextColor(color)
+                text.setTransform(QTransform().scale(scale_factor, 1.0))
+            else:
+                self._extra_lines_after.append(line_index)
+
+                idx = len(text_str) // 2
+                while idx < len(text_str) and not text_str[idx].isspace():
+                    idx += 1
+
+                line_index = self._add_line(scene, line_index, left, text_str[:idx], font, color, offset)
+                line_index += 1
+                line_index = self._add_line(scene, line_index, left, "       {}".format(text_str[idx:]), font, color, offset)
+
+        return line_index
 
     def _rebuild_scene(self, keep_progress=False):
 
@@ -162,45 +203,25 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         heading_color = QColor(180, 180, 180)
 
         self._line_height = self._calc_line_height(default_font)
-        self._document_height = self._calc_document_height(self._line_height)
 
         # scene.addRect(0.0, 0.0, self.w, self._document_height * 1.2, QPen(Qt.NoPen), QBrush(Qt.NoBrush))
 
         left = self.w / 50
-        # title.setPos(left, self._line_height)
-
-        def add_line(text, offset=0, font=default_font, color=default_color):
-            y = self._line_height * line_index + offset + self.h * 0.1
-
-            if line_index == 1:
-                self._first_lyrics_line_y = y
-
-            metrics = QFontMetricsF(font)
-            text_width = metrics.width(text)
-            max_text_width = (self.w - left - left)
-            overflow = text_width - max_text_width
-
-            text = scene.addText(text, font)
-            text.setPos(left, y)
-            text.setDefaultTextColor(color)
-
-            if overflow > 0:
-                text.setTransform(QTransform().scale(max_text_width / text_width, 1.0))
-
 
         line_index = 0
-        add_line(self.title, offset=- self.h * 0.05, font=title_font)
+        line_index = self._add_line(scene, line_index, left, self.title, offset=- self.h * 0.05, font=title_font, color=default_color)
 
-        line_index = 1
+        line_index += 1
         for marker in sorted(self.markers, key=attrgetter("progress")):
 
-            add_line(marker.name, offset=self._line_height * 0.2, font=heading_font, color=heading_color)
+            line_index = self._add_line(scene, line_index, left, marker.name, offset=self._line_height * 0.2, font=heading_font, color=heading_color)
             line_index += 1
 
             for line in marker.text.splitlines():
-                add_line(line)
+                line_index = self._add_line(scene, line_index, left, line, font=default_font, color=default_color)
                 line_index += 1
 
+        self._document_height = self._calc_document_height()
         # self._document_cover = scene.addRect(-self.w * 0.5, -self._document_height * 0.5, self.w * 2, self._document_height * 2,
         #                                      QPen(Qt.NoPen), QBrush(QColor(0, 0, 0)))
         # self._document_cover.setOpacity(1)
@@ -249,8 +270,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
     def resizeEvent(self, resize_event):
         self.fitInView(QRectF(0, 0, self.w, self.h), Qt.KeepAspectRatio)
 
-    def _calc_document_height(self, line_height):
-        return (self._linecount + 1) * line_height
+    def _calc_document_height(self):
+        return (self._linecount + 1 + len(self._extra_lines_after)) * self._line_height
 
     def _calc_line_height(self, font):
         metrics = QFontMetricsF(font)
