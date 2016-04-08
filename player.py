@@ -170,11 +170,13 @@ class Player(QWidget):
 
         self.settings = {
             'font_size': 40,
+            'line_increment': 2,
         }
         self._load_settings()
 
         self.settings_widget = SettingsWidget(self.settings)
         self.settings_widget.font_size_changed.connect(self.songtext_widget.set_font_size)
+        self.settings_widget.line_increment_changed.connect(self.songtext_widget.set_line_increment)
 
     @property
     def available_song_numbers(self):
@@ -544,6 +546,7 @@ class Player(QWidget):
                 self.settings.update(settings)
 
                 self.songtext_widget.set_font_size(self.settings['font_size'])
+                self.songtext_widget.set_line_increment(self.settings['line_increment'])
 
         except FileNotFoundError:
             pass

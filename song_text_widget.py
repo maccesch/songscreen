@@ -25,7 +25,6 @@ class SongTextCover(QGraphicsObject):
 
 class SongTextWidget(MarkerMixin, QGraphicsView):
     line_height_factor = 1.5
-    scroll_lines = 2
 
     def __init__(self, *args, **kwargs):
         super(SongTextWidget, self).__init__(*args, **kwargs)
@@ -60,6 +59,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self._animation = None
 
         self._font_size = 40
+        self._line_increment = 2
 
     def heightForWidth(self, width):
         return int(round(width / 16 * 9))
@@ -134,9 +134,9 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         vertical_offset += self._line_height * extra_line_count
 
         diff = self.sceneRect().y() - vertical_offset
-        if abs(diff) > self._line_height * self.scroll_lines:
-            factor = -int(diff) // int(self._line_height * self.scroll_lines)
-            y = self.sceneRect().y() + (self._line_height * self.scroll_lines) * factor
+        if abs(diff) > self._line_height * self._line_increment:
+            factor = -int(diff) // int(self._line_height * self._line_increment)
+            y = self.sceneRect().y() + (self._line_height * self._line_increment) * factor
             y = max(0, y)
             target_rect = QRectF(0, y, self.w, self.h)
 
@@ -310,3 +310,6 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
     def set_font_size(self, font_size):
         self._font_size = font_size
         self._rebuild_scene(keep_progress=True)
+
+    def set_line_increment(self, increment):
+        self._line_increment = increment
