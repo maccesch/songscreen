@@ -24,7 +24,7 @@ for item in filter(lambda i: isinstance(i, epub.EpubHtml), book.items):
                     'text': '',
                 }
                 for line_element in verse_element.getchildren():
-                    if line_element.tag == 'p':
+                    if line_element.tag == 'p' and not 'se' in line_element.attrib.get('class', ''):
                         while line_element.getchildren():
                             line_element.getchildren()[0].drop_tag()
 
@@ -38,12 +38,23 @@ for item in filter(lambda i: isinstance(i, epub.EpubHtml), book.items):
                             markers.append(marker)
 
                         marker = {
-                            'name': "Refrain",
+                            'name': line_element.getchildren()[0].text.strip().
+                                replace('(', '').replace(')', '').lower().capitalize(),
                             'text': "",
                         }
 
                         for chorus_line_element in line_element.getchildren()[1:]:
                             marker['text'] += "{}\n".format(chorus_line_element.text)
+
+                    else:
+                        if marker is not None:
+                            marker['text'] = marker['text'][:-1]
+                            markers.append(marker)
+
+                        marker = {
+                            'name': line_element.text.strip().replace('(', '').replace(')', '').lower().capitalize(),
+                            'text': "",
+                        }
 
                 marker['text'] = marker['text'][:-1]
                 markers.append(marker)
