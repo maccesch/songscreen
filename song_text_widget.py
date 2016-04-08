@@ -185,7 +185,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
             text.setDefaultTextColor(color)
 
             if overflow > 0:
-                text.setTransform(QTransform().scale(1.0 - overflow / max_text_width, 1.0))
+                text.setTransform(QTransform().scale(max_text_width / text_width, 1.0))
 
 
         line_index = 0
