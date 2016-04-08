@@ -22,7 +22,7 @@ class SettingsWidget(QDialog):
         self.font_size_input.setValue(settings['font_size'])
         self.font_size_input.valueChanged.connect(self._set_font_size)
 
-        form_layout.addRow("Schriftgröße", self.font_size_input)
+        form_layout.addRow(self.tr("Font size"), self.font_size_input)
 
         self.increment_input = QSpinBox()
         self.increment_input.setMinimum(1)
@@ -31,13 +31,13 @@ class SettingsWidget(QDialog):
         self.increment_input.setValue(settings['line_increment'])
         self.increment_input.valueChanged.connect(self._set_line_increment)
 
-        form_layout.addRow("Scroll-Schrittgröße in Zeilen", self.increment_input)
+        form_layout.addRow(self.tr("Scroll step size in lines"), self.increment_input)
 
         footer_layout = QHBoxLayout()
         footer_layout.setContentsMargins(0, 20, 0, 0)
         footer_layout.addStretch(1)
 
-        self.close_button = QPushButton(text="Schließen", clicked=self.hide)
+        self.close_button = QPushButton(text=self.tr("Close"), clicked=self.hide)
 
         footer_layout.addWidget(self.close_button)
 

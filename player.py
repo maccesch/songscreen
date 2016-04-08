@@ -4,7 +4,7 @@ import json
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
-                          QTime, QUrl, QObject, QEvent)
+                          QTime, QUrl, QObject, QEvent, QTranslator)
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
@@ -116,7 +116,7 @@ class Player(QWidget):
         self.screen_select_widget.active_screen = QApplication.desktop().screenNumber(self.songtext_widget)
 
         self.settings_button = QPushButton()
-        self.settings_button.setText("Einstellungen...")
+        self.settings_button.setText(self.tr("Settings..."))
         self.settings_button.clicked.connect(self.show_settings)
 
         sidebarLayout = QVBoxLayout()
@@ -570,6 +570,10 @@ if __name__ == '__main__':
     QFontDatabase.addApplicationFont("font/FiraSans-Regular.otf")
     QFontDatabase.addApplicationFont("font/FiraSans-Medium.otf")
     QFontDatabase.addApplicationFont("font/FiraSans-SemiBold.otf")
+
+    translator = QTranslator()
+    translator.load("de", "lang")
+    app.installTranslator(translator)
 
     player = Player()
     player.show()

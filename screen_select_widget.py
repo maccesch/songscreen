@@ -17,7 +17,7 @@ class ScreenSelectWidget(QWidget):
 
         layout = QVBoxLayout()
         layout.addStretch(1)
-        layout.addWidget(QLabel("Textbildschirm"))
+        layout.addWidget(QLabel(self.tr("Lyrics screen")))
         self.setLayout(layout)
 
         self.refresh_widget()
@@ -43,9 +43,10 @@ class ScreenSelectWidget(QWidget):
             button.setAutoExclusive(True)
             if i == self._active_screen:
                 button.setChecked(True)
-            button.setText("Bildschirm {}{}".format(
+            button.setText("{} {}{}".format(
+                self.tr("Screen"),
                 i + 1,
-                "" if desktop.screenNumber(self) != i else " (dieser)"
+                "" if desktop.screenNumber(self) != i else " ({})".format(self.tr("this", "refers to the screen"))
             ))
             layout.addWidget(button)
             button.pressed.connect(partial(self._screen_button_pressed, i))
