@@ -16,8 +16,9 @@ class ScreenSelectWidget(QWidget):
 
 
         layout = QVBoxLayout()
-        layout.addStretch(1)
+#        layout.addStretch(1)
         layout.addWidget(QLabel(self.tr("Lyrics screen")))
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         self.refresh_widget()

@@ -120,7 +120,7 @@ class Player(QWidget):
         self.settings_button.clicked.connect(self.show_settings)
 
         sidebarLayout = QVBoxLayout()
-        # sidebarLayout.setContentsMargins(10, 11, 0, 2);
+        sidebarLayout.setContentsMargins(10, 1, 0, 1);
 
         sidebarLayout.addWidget(self.settings_button)
         sidebarLayout.addStretch(1);
@@ -311,7 +311,7 @@ class Player(QWidget):
                     marker.progress = offset + (1 - offset) * (1 - silence_ratio) * linecount / line_total
                 linecount += marker.linecount - 1
 
-            # self.player.pause()
+            self.player.pause()
 
     @property
     def _should_fade_out(self):

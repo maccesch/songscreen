@@ -36,6 +36,7 @@ class SongSelectWidget(QWidget):
         layout = QGridLayout()
         layout.setHorizontalSpacing(1)
         layout.setVerticalSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         # self.buttons = []

@@ -200,6 +200,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         scene.setBackgroundBrush(Qt.white)
         scene.clear()
 
+        self._extra_lines_after = []
+
         font_size = self._calc_font_size(self.h)
 
         title_font = QFont('Fira Sans', font_size, QFont.Medium)

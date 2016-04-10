@@ -77,6 +77,7 @@ class PlayerControlsWidget(QWidget):
 
         layout = QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignBottom)
         # layout.addWidget(self.previousButton)
         layout.addWidget(self.playButton)
         layout.addWidget(self.stopButton)
