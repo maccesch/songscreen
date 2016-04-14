@@ -4,7 +4,7 @@ import json
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
-                          QTime, QUrl, QObject, QEvent, QTranslator, QLocale)
+                          QTime, QUrl, QTranslator, QLocale)
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
@@ -334,7 +334,7 @@ class Player(QWidget):
 
     @property
     def _should_fade_out(self):
-        return self.player.position() / 1000 >= self.duration - 4
+        return self.player.position() / 1000 >= self.duration - 5
 
     def positionChanged(self, progress):
         progress /= 1000
@@ -374,10 +374,6 @@ class Player(QWidget):
         if index.isValid():
             self.playlist.setCurrentIndex(index.row())
             self.player.play()
-
-    def playlistPositionChanged(self, position):
-        self.playlistView.setCurrentIndex(
-            self.playlistModel.index(position, 0))
 
     def seek(self, seconds):
         self.player.setPosition(seconds * 1000)
