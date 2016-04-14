@@ -21,7 +21,7 @@ from settings_widget import SettingsWidget
 
 class Player(QWidget):
     audio_path = "audio"
-    lyrics_path = os.path.join("lyrics", "de")
+    lyrics_path = "lyrics"
     timings_path = os.path.join("lyrics", "timing")
     settings_path = "settings.json"
 
@@ -108,7 +108,7 @@ class Player(QWidget):
         # displayLayout.addWidget(self.songtext_widget)
         # displayLayout.addWidget(self.playlistView)
 
-        self.song_select_widget = SongSelectWidget(self.available_song_numbers)
+        self.song_select_widget = SongSelectWidget()
         self.song_select_widget.song_selected.connect(self.load_song)
 
         self.screen_select_widget = ScreenSelectWidget()
@@ -174,16 +174,29 @@ class Player(QWidget):
         }
         self._load_settings()
 
-        self.settings_widget = SettingsWidget(self.settings)
+        self.settings_widget = SettingsWidget(self.settings, self.lyrics_path)
         self.settings_widget.font_size_changed.connect(self.songtext_widget.set_font_size)
         self.settings_widget.line_increment_changed.connect(self.songtext_widget.set_line_increment)
+        self.settings_widget.language_changed.connect(self._language_changed)
+
+        self.song_select_widget.reset(self.available_song_numbers)
+
+    @property
+    def lyrics_language_path(self):
+        return os.path.join(self.lyrics_path, self.settings['lyrics_language'])
 
     @property
     def available_song_numbers(self):
         audios = set(
             [int(os.path.splitext(filename)[0]) for filename in os.listdir(self.audio_path) if filename[0] != '.'])
-        lyrics = set(
-            [int(os.path.splitext(filename)[0]) for filename in os.listdir(self.lyrics_path) if filename[0] != '.'])
+        try:
+            lyrics = set(
+                [int(os.path.splitext(filename)[0])
+                 for filename in os.listdir(self.lyrics_language_path)
+                 if filename[0] != '.']
+            )
+        except ValueError as e:
+            lyrics = set()
 
         return sorted(list(audios.intersection(lyrics)))
 
@@ -226,13 +239,13 @@ class Player(QWidget):
 
             self._song_number = song_number
             self.slider.dirty = False
-            self._load_audio(self._song_number)
-            self._load_lyrics(self._song_number)
+            self._load_audio()
+            self._load_lyrics()
 
         # self.player.play()
 
-    def _load_audio(self, song_number):
-        filename = os.path.join(self.audio_path, "{:03}.m4a".format(song_number))
+    def _load_audio(self):
+        filename = os.path.join(self.audio_path, "{:03}.m4a".format(self._song_number))
         self.playlist.clear()
         fileInfo = QFileInfo(filename)
         if fileInfo.exists():
@@ -245,8 +258,8 @@ class Player(QWidget):
 
             self.player.play()
 
-    def _load_lyrics(self, song_number):
-        with open(os.path.join(self.lyrics_path, "{}.json".format(song_number)), 'r') as f:
+    def _load_lyrics(self):
+        with open(os.path.join(self.lyrics_language_path, "{}.json".format(self._song_number)), 'r') as f:
             song_markers = json.load(f)
 
             self.markers = []
@@ -257,12 +270,12 @@ class Player(QWidget):
                 marker.progress = 0.0
                 self.markers.append(marker)
 
-            self.songtext_widget.title = "{}  {}".format(song_number, song_markers['title'])
+            self.songtext_widget.title = "{}  {}".format(self._song_number, song_markers['title'])
             self.songtext_widget.markers = self.markers
             self.songtext_widget.fade_in()
 
         try:
-            with open(os.path.join(self.timings_path, "{}.json".format(song_number)), 'r') as f:
+            with open(os.path.join(self.timings_path, "{}.json".format(self._song_number)), 'r') as f:
                 timings = json.load(f)
                 for m, t in zip(self.markers, timings):
                     m.progress = t
@@ -270,6 +283,12 @@ class Player(QWidget):
             pass
 
         self.slider.markers = self.markers
+
+    def _language_changed(self, _):
+        available_song_numbers = self.available_song_numbers
+        self.song_select_widget.reset(available_song_numbers)
+        if self._song_number in available_song_numbers:
+            self._load_lyrics()
 
     # def open(self):
     #     fileNames, _ = QFileDialog.getOpenFileNames(self, "Open Files")
@@ -547,6 +566,10 @@ class Player(QWidget):
 
                 self.songtext_widget.set_font_size(self.settings['font_size'])
                 self.songtext_widget.set_line_increment(self.settings['line_increment'])
+
+            if not os.path.exists(self.lyrics_language_path):
+                languages = list(filter(lambda p: p != "timings", os.listdir(self.lyrics_path)))
+                self.settings['lyrics_language'] = languages[0] if languages else ""
 
         except FileNotFoundError:
             pass

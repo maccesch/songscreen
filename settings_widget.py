@@ -1,13 +1,17 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QFormLayout, QSpinBox, QDialog, QPushButton, QHBoxLayout, QSpacerItem, QVBoxLayout
 
+from import_lyrics_wizard import ImportLyricsWizard
+from language_select_widget import LanguageSelectWidget
+
 
 class SettingsWidget(QDialog):
 
     font_size_changed = pyqtSignal(int)
     line_increment_changed = pyqtSignal(int)
+    language_changed = pyqtSignal(str)
 
-    def __init__(self, settings, *args, **kwargs):
+    def __init__(self, settings, lyrics_path, *args, **kwargs):
         super(SettingsWidget, self).__init__(*args, **kwargs)
 
         self.settings = settings
@@ -35,6 +39,11 @@ class SettingsWidget(QDialog):
 
         form_layout.addRow(self.tr("Scroll step size in lines"), self.increment_input)
 
+        self.language_widget = LanguageSelectWidget(lyrics_path, self.settings['lyrics_language'])
+        self.language_widget.language_changed.connect(self._language_changed)
+
+        form_layout.addRow(self.tr("Lyrics Language"), self.language_widget)
+
         footer_layout = QHBoxLayout()
         footer_layout.setContentsMargins(0, 20, 0, 0)
         footer_layout.addStretch(1)
@@ -56,3 +65,7 @@ class SettingsWidget(QDialog):
     def _set_line_increment(self, increment):
         self.settings['line_increment'] = increment
         self.line_increment_changed.emit(increment)
+
+    def _language_changed(self, name):
+        self.settings['lyrics_language'] = name
+        self.language_changed.emit(name)
