@@ -8,7 +8,7 @@ a = Analysis(['player.py'],
              binaries=None,
              datas=[
                 ('font/*', 'font'),
-                ('lyrics/de/*', 'lyrics/de'),
+                ('lyrics/Deutsch/*', 'lyrics/Deutsch'),
                 ('lyrics/timing/*', 'lyrics/timing'),
                 ('lang/*.qm', 'lang'),
                 ('audio/*', 'audio'),
@@ -29,7 +29,8 @@ exe = EXE(pyz,
           debug=False,
           strip=False,
           upx=True,
-          console=False )
+          console=False,
+          icon='icon.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
@@ -39,5 +40,5 @@ coll = COLLECT(exe,
                name='SongScreen')
 app = BUNDLE(coll,
              name='SongScreen.app',
-             icon=None,
+             icon='icon.icns',
              bundle_identifier=None)
