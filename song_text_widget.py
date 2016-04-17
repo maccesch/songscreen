@@ -52,6 +52,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self.setRenderHints(QPainter.HighQualityAntialiasing | QPainter.SmoothPixmapTransform)
         self.setInteractive(False)
         self.scene().setBackgroundBrush(Qt.black)
+        self.setStyleSheet( "QGraphicsView { border-style: none; }" )
 
         self._line_height = 10
         self._document_height = 10
@@ -191,6 +192,9 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         return line_index
 
     def _rebuild_scene(self, keep_progress=False):
+        if not self.markers:
+            self.scene().setBackgroundBrush(Qt.black)
+            return
 
         if keep_progress:
             prev_scene_rect_y = self.sceneRect().y()
