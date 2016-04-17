@@ -268,6 +268,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self.fitInView(QRectF(0, 0, self.w, self.h), Qt.KeepAspectRatio)
 
     def fade_in(self):
+        self.show()
+        self.raise_()
         self._covered = False
 
         self._document_cover_animation = QPropertyAnimation(self._document_cover, b"opacity")
@@ -293,6 +295,7 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
         self._covered = True
         self._animation = None
         self.progress = 0
+        self.hide()
 
     def _redraw_scene(self):
         self.viewport().update()
