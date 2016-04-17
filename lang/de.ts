@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="de_DE" sourcelanguage="en_US">
+<!DOCTYPE TS><TS version="2.0" language="de_DE" sourcelanguage="en_US">
 <context>
     <name>EpubsPage</name>
     <message>
@@ -40,6 +39,26 @@
         <location filename="import_lyrics_wizard.py" line="85"/>
         <source>Import Lyrics Wizard</source>
         <translation>Liederbuchimportassistent</translation>
+    </message>
+    <message>
+        <location filename="import_lyrics_wizard.py" line="87"/>
+        <source>Next</source>
+        <translation>Weiter</translation>
+    </message>
+    <message>
+        <location filename="import_lyrics_wizard.py" line="88"/>
+        <source>Back</source>
+        <translation>Zurück</translation>
+    </message>
+    <message>
+        <location filename="import_lyrics_wizard.py" line="89"/>
+        <source>Finish</source>
+        <translation>Fertig</translation>
+    </message>
+    <message>
+        <location filename="import_lyrics_wizard.py" line="90"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>

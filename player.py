@@ -4,7 +4,7 @@ import json
 import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
-                          QTime, QUrl, QTranslator, QLocale)
+                          QTime, QUrl, QTranslator, QLocale, QLibraryInfo)
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
@@ -171,6 +171,7 @@ class Player(QWidget):
         self.settings = {
             'font_size': 40,
             'line_increment': 2,
+            'lyrics_language': '',
         }
         self._load_settings()
 
@@ -563,8 +564,11 @@ class Player(QWidget):
                 self.songtext_widget.set_font_size(self.settings['font_size'])
                 self.songtext_widget.set_line_increment(self.settings['line_increment'])
 
-            if not os.path.exists(self.lyrics_language_path):
-                languages = list(filter(lambda p: p != "timings", os.listdir(self.lyrics_path)))
+            if not os.path.exists(self.lyrics_language_path) or not self.settings['lyrics_language']:
+                languages = list(
+                    filter(lambda p: os.path.isdir(os.path.join(self.lyrics_path, p)) and p != "timings",
+                           os.listdir(self.lyrics_path))
+                )
                 self.settings['lyrics_language'] = languages[0] if languages else ""
 
         except FileNotFoundError:
@@ -591,7 +595,7 @@ if __name__ == '__main__':
     QFontDatabase.addApplicationFont("font/FiraSans-SemiBold.otf")
 
     translator = QTranslator()
-    translator.load(QLocale(), "", "", "lang")
+    translator.load(QLocale.system(), "", "", "lang")
     app.installTranslator(translator)
 
     player = Player()

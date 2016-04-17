@@ -82,6 +82,11 @@ class ImportLyricsWizard(QWizard):
 
         self.setWindowTitle(self.tr("Import Lyrics Wizard"))
 
+        self.setButtonText(QWizard.NextButton, self.tr("Next"))
+        self.setButtonText(QWizard.BackButton, self.tr("Back"))
+        self.setButtonText(QWizard.FinishButton, self.tr("Finish"))
+        self.setButtonText(QWizard.CancelButton, self.tr("Cancel"))
+
         self.old_language = None
 
     def edit_language(self, name):
@@ -244,4 +249,3 @@ class ImportLyricsWizard(QWizard):
 
                 except ValueError:
                     pass
-
