@@ -142,4 +142,12 @@
         <translation>Sprache der Liedtexte</translation>
     </message>
 </context>
+<context>
+    <name>SongTextWidget</name>
+    <message>
+        <location filename="song_text_widget.py" line="32"/>
+        <source>Lyrics</source>
+        <translation>Liedtext</translation>
+    </message>
+</context>
 </TS>

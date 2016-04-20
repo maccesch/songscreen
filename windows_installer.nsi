@@ -41,6 +41,17 @@ Section "SongScreen (required)"
   ; Put file there
   File /r "dist\SongScreen\*"
 
+  FileOpen $0 "$INSTDIR\settings.json" w
+  FileClose $0
+
+  AccessControl::GrantOnFile \
+    "$INSTDIR\lyrics" "(BU)" "GenericRead + GenericWrite"
+  Pop $0
+
+  AccessControl::GrantOnFile \
+    "$INSTDIR\settings.json" "(BU)" "GenericRead + GenericWrite"
+  Pop $0
+
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\SongScreen "Install_Dir" "$INSTDIR"
 

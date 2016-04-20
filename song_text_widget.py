@@ -29,6 +29,8 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
     def __init__(self, *args, **kwargs):
         super(SongTextWidget, self).__init__(*args, **kwargs)
 
+        self.setWindowTitle(self.tr("Lyrics"))
+
         self.w = 1920
         self.h = 1080
 
