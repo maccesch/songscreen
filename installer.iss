@@ -22,9 +22,9 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=C:\Users\maccesch\Desktop\songscreen\LICENSE
+LicenseFile=LICENSE
 OutputBaseFilename=Install_SongScreen
-SetupIconFile=C:\Users\maccesch\Desktop\songscreen\icon.ico
+SetupIconFile=icon.ico
 Compression=lzma
 SolidCompression=yes
 
@@ -37,9 +37,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "C:\Users\maccesch\Desktop\songscreen\dist\SongScreen\SongScreen.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\maccesch\Desktop\songscreen\dist\SongScreen\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dist\SongScreen\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "empty.txt"; DestDir: "{app}"; DestName: "settings.json"; Flags: onlyifdoesntexist; Permissions: everyone-modify
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
