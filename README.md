@@ -1,9 +1,9 @@
-Use `songtext_epub_to_json.py` and `new_songtext_epub_to_json.py` to import the song epubs from jw.org.
+Download the MP3 audio files from jw.org and rename them to `001.mp3`, `002.m4a`, ... and put them into the `audio` folder.
 
-Download the AAC audio files from jw.org and rename them to `001.m4a` ... `149.m4a` and put them into the `audio` folder.
+To import the lyrics in your language download the two epubs from jw.org (the song book and the new songs). With SongScreen open click on the "Settings" button and there click "New language...". Then simply follow the instructions of the language editing assistant.
 
 To deploy execute the following in a terminal
 
     pyinstaller SongScreen.spec
-    
+
 Of course you need to install [PyInstaller](http://pythonhosted.org/PyInstaller/) first.
