@@ -49,7 +49,12 @@ class SongSelectWidget(QWidget):
         self._buttons = []
 
         if song_numbers:
-            for i in range(max(30, (song_numbers[-1] // 10 + 1) * 10)):
+            if song_numbers[-1] % 10 == 0:
+                max_number = song_numbers[-1]
+            else:
+                max_number = (song_numbers[-1] // 10 + 1) * 10
+
+            for i in range(max(30, max_number)):
                 button = QPushButton()
                 button.setCheckable(True)
                 button.setAutoExclusive(True)

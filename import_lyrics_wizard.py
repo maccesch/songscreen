@@ -149,7 +149,7 @@ class ImportLyricsWizard(QWizard):
                                 markers.append(marker)
 
                             marker = {
-                                'name': verse_no,
+                                'name': str(verse_no),
                                 'text': line_text,
                             }
                         else:
@@ -200,7 +200,7 @@ class ImportLyricsWizard(QWizard):
 
                     for verse_no, verse_element in enumerate(tree.xpath("//div[@class='pGroup']/ol/li"), 1):
                         marker = {
-                            'name': verse_no,
+                            'name': str(verse_no),
                             'text': '',
                         }
                         for line_element in verse_element.getchildren():

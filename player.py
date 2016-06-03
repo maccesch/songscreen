@@ -246,7 +246,7 @@ class Player(QWidget):
         # self.player.play()
 
     def _load_audio(self):
-        filename = os.path.join(self.audio_path, "{:03}.m4a".format(self._song_number))
+        filename = os.path.join(self.audio_path, "{:03}.mp3".format(self._song_number))
         self.playlist.clear()
         fileInfo = QFileInfo(filename)
         if fileInfo.exists():
