@@ -30,6 +30,8 @@ class Player(QWidget):
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)
 
+        self.setWindowTitle("SongScreen")
+
         self.setFocusPolicy(Qt.StrongFocus)
 
         self.colorDialog = None
@@ -439,18 +441,18 @@ class Player(QWidget):
     def setTrackInfo(self, info):
         self.trackInfo = info
 
-        if self.statusInfo != "":
-            self.setWindowTitle("%s | %s" % (self.trackInfo, self.statusInfo))
-        else:
-            self.setWindowTitle(self.trackInfo)
+        # if self.statusInfo != "":
+        #     self.setWindowTitle("%s | %s" % (self.trackInfo, self.statusInfo))
+        # else:
+        #     self.setWindowTitle(self.trackInfo)
 
     def setStatusInfo(self, info):
         self.statusInfo = info
 
-        if self.statusInfo != "":
-            self.setWindowTitle("%s | %s" % (self.trackInfo, self.statusInfo))
-        else:
-            self.setWindowTitle(self.trackInfo)
+        # if self.statusInfo != "":
+        #     self.setWindowTitle("%s | %s" % (self.trackInfo, self.statusInfo))
+        # else:
+        #     self.setWindowTitle(self.trackInfo)
 
     def displayErrorMessage(self):
         self.setStatusInfo(self.player.errorString())
@@ -564,15 +566,15 @@ class Player(QWidget):
                 self.songtext_widget.set_font_size(self.settings['font_size'])
                 self.songtext_widget.set_line_increment(self.settings['line_increment'])
 
-            if not os.path.exists(self.lyrics_language_path) or not self.settings['lyrics_language']:
-                languages = list(
-                    filter(lambda p: os.path.isdir(os.path.join(self.lyrics_path, p)) and p != "timings",
-                           os.listdir(self.lyrics_path))
-                )
-                self.settings['lyrics_language'] = languages[0] if languages else ""
-
-        except FileNotFoundError:
+        except (FileNotFoundError, ValueError):
             pass
+
+        if not os.path.exists(self.lyrics_language_path) or not self.settings['lyrics_language']:
+            languages = list(
+                filter(lambda p: os.path.isdir(os.path.join(self.lyrics_path, p)) and p != "timings",
+                       os.listdir(self.lyrics_path))
+            )
+            self.settings['lyrics_language'] = languages[0] if languages else ""
 
 
 if __name__ == '__main__':
