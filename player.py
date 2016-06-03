@@ -5,7 +5,7 @@ import os
 
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
                           QTime, QUrl, QTranslator, QLocale, QLibraryInfo)
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFontDatabase, QIcon
 from PyQt5.QtMultimedia import (QMediaContent,
                                 QMediaMetaData, QMediaPlayer, QMediaPlaylist)
 from PyQt5.QtWidgets import (QApplication, QDialog, QFormLayout, QHBoxLayout, QLabel, QMessageBox,
@@ -599,6 +599,8 @@ if __name__ == '__main__':
     translator = QTranslator()
     translator.load(QLocale.system(), "", "", "lang")
     app.installTranslator(translator)
+
+    app.setWindowIcon(QIcon('icon.ico'))
 
     player = Player()
     player.show()
