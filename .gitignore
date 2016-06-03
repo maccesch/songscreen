@@ -160,3 +160,4 @@ target/
 !/lyrics/timing/*
 /audio/*
 !SongScreen.spec
+Output
