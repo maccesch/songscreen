@@ -223,21 +223,21 @@ class SongTextWidget(MarkerMixin, QGraphicsView):
 
         # scene.addRect(0.0, 0.0, self.w, self._document_height * 1.2, QPen(Qt.NoPen), QBrush(Qt.NoBrush))
 
-        left = self.w / 50
+        margin = self.w / 10
 
         line_index = 0
-        line_index = self._add_line(scene, line_index, left, self.title, offset=- self.h * 0.05, font=title_font,
+        line_index = self._add_line(scene, line_index, margin, self.title, offset=- self.h * 0.05, font=title_font,
                                     color=default_color)
 
         line_index += 1
         for marker in sorted(self.markers, key=attrgetter("progress")):
 
-            line_index = self._add_line(scene, line_index, left, marker.name, offset=self._line_height * 0.2,
+            line_index = self._add_line(scene, line_index, margin, marker.name, offset=self._line_height * 0.2,
                                         font=heading_font, color=heading_color)
             line_index += 1
 
             for line in marker.text.splitlines():
-                line_index = self._add_line(scene, line_index, left, line, font=default_font, color=default_color)
+                line_index = self._add_line(scene, line_index, margin, line, font=default_font, color=default_color)
                 line_index += 1
 
         self._document_height = self._calc_document_height()
