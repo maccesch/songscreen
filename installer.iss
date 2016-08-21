@@ -39,7 +39,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 [Files]
 Source: "dist\SongScreen\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: "empty.txt"; DestDir: "{app}"; DestName: "settings.json"; Flags: onlyifdoesntexist; Permissions: everyone-modify
+; Source: "empty.txt"; DestDir: "{app}"; DestName: "settings.json"; Flags: onlyifdoesntexist; Permissions: everyone-modify
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

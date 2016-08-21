@@ -90,7 +90,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="player.py" line="121"/>
+        <location filename="player.py" line="123"/>
         <source>Settings...</source>
         <translation>Einstellungen...</translation>
     </message>

@@ -3,6 +3,8 @@
 import json
 import os
 
+from PyQt5.QtCore import QPoint
+from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
                           QTime, QUrl, QTranslator, QLocale, QLibraryInfo)
 from PyQt5.QtGui import QFontDatabase, QIcon
@@ -245,7 +247,7 @@ class Player(QWidget):
             self._load_audio()
             self._load_lyrics()
 
-        # self.player.play()
+            # self.player.play()
 
     def _load_audio(self):
         filename = os.path.join(self.audio_path, "{:03}.mp3".format(self._song_number))
@@ -542,32 +544,43 @@ class Player(QWidget):
                 json.dump([marker.progress for marker in self.markers], f, indent=2)
 
     def _save_settings(self):
-        with open(self.settings_path, 'w') as f:
-            self.settings.update({
-                'lyrics_screen': QApplication.desktop().screenNumber(self.songtext_widget),
-                'control_window_position': [self.x(), self.y()],
-            })
+        # TODO : refactor and use QSettings directly
 
-            json.dump(self.settings, f, indent=2)
+        # with open(self.settings_path, 'w') as f:
+        self.settings.update({
+            'lyrics_screen': QApplication.desktop().screenNumber(self.songtext_widget),
+            'control_window_position': self.pos(),
+        })
+
+        # json.dump(self.settings, f, indent=2)
+
+        settings = QSettings("Maccesch", "SongScreen")
+
+        for key, value in self.settings.items():
+            settings.setValue(key, value)
 
     def _load_settings(self):
-        try:
-            with open(self.settings_path, 'r') as f:
-                settings = json.load(f)
+        # try:
+        #     with open(self.settings_path, 'r') as f:
+        #         settings = json.load(f)
+        settings = QSettings("Maccesch", "SongScreen")
 
-                if 'lyrics_screen' in settings.keys():
-                    self.display_lyrics_on_screen(settings['lyrics_screen'])
+        if settings.contains('lyrics_screen'):
+            self.display_lyrics_on_screen(settings.value('lyrics_screen'))
 
-                if 'control_window_position' in settings.keys():
-                    self.move(*settings['control_window_position'])
+        if settings.contains('control_window_position'):
+            self.move(settings.value('control_window_position'))
 
-                self.settings.update(settings)
+        for key in settings.allKeys():
+            self.settings[key] = settings.value(key)
 
-                self.songtext_widget.set_font_size(self.settings['font_size'])
-                self.songtext_widget.set_line_increment(self.settings['line_increment'])
+        # self.settings.update(settings)
 
-        except (FileNotFoundError, ValueError):
-            pass
+        self.songtext_widget.set_font_size(self.settings['font_size'])
+        self.songtext_widget.set_line_increment(self.settings['line_increment'])
+
+        # except (FileNotFoundError, ValueError):
+        #     pass
 
         if not os.path.exists(self.lyrics_language_path) or not self.settings['lyrics_language']:
             languages = list(
