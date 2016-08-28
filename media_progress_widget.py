@@ -68,7 +68,7 @@ class MediaMarker(QObject):
 
 
 class MediaProgressWidget(MarkerMixin, QAbstractSlider):
-    _marker_type_pattern = re.compile(r"^(?:\d+\. )?(.+)$")
+    _marker_type_verse_pattern = re.compile(r"^(?:\d+)$")
 
     def __init__(self):
         super(MediaProgressWidget, self).__init__()
@@ -147,25 +147,29 @@ class MediaProgressWidget(MarkerMixin, QAbstractSlider):
         else:
             prev_marker = self._markers[update_marker_index - 1]
             length = update_marker.progress - prev_marker.progress
-            m = self._marker_type_pattern.match(update_marker.name)
-            marker_type = m.group(1)
+            marker_type = self._get_marker_type(update_marker.name)
 
             # TODO : this assumes that there are only 2 types of markers
             prev_marker_type = None
             prev_length = None
             if update_marker_index > 1:
-                m = self._marker_type_pattern.match(prev_marker.name)
-                prev_marker_type = m.group(1)
+                prev_marker_type = self._get_marker_type(prev_marker.name)
 
                 if marker_type != prev_marker_type:
                     prev_length = prev_marker.progress - self._markers[update_marker_index - 2].progress
 
             for i in range(update_marker_index, len(self._markers) - 1):
                 marker = self._markers[i + 1]
-                if marker_type in marker.name:
+                next_marker_type = self._get_marker_type(marker.name)
+                if marker_type == next_marker_type:
                     marker.progress = self._markers[i].progress + length
-                elif prev_marker_type is not None and prev_marker_type in marker.name:
+                elif prev_marker_type is not None and prev_marker_type == next_marker_type:
                     marker.progress = self._markers[i].progress + prev_length
+
+    def _get_marker_type(self, marker_name):
+        m = self._marker_type_verse_pattern.match(marker_name)
+        marker_type = "verse" if m is not None else "chorus"
+        return marker_type
 
     def _markers_changed(self):
         self.repaint()

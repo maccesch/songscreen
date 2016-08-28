@@ -26,8 +26,10 @@ class LanguageSelectWidget(QWidget):
             if filename != "timing" and os.path.isdir(os.path.join(self.lyrics_path, filename)):
                 languages.append(filename)
 
-        self.languages_combo_box = QComboBox(currentTextChanged=self._language_changed)
+        self.languages_combo_box = QComboBox()
         self.languages_combo_box.addItems(sorted(languages) + [self.tr("New Language...")])
+        self.languages_combo_box.currentTextChanged.connect(self._language_changed)
+
         self._select_current_language()
         layout.addWidget(self.languages_combo_box)
 
