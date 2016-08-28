@@ -1,5 +1,7 @@
 import os
 import json
+
+import re
 from ebooklib import epub
 from ebooklib.utils import parse_html_string
 from PyQt5.QtWidgets import QWizard, QWizardPage, QFormLayout, QLineEdit, QPushButton, QFileDialog
@@ -121,17 +123,25 @@ class ImportLyricsWizard(QWizard):
         self.close()
 
     def _import_old_epub(self, lyrics_path):
+        new_verse_pattern = re.compile(r"^(\d)\. (.+)$")
+        no_and_title_pattern = re.compile(r"\s*(\d+) (.+)$")
+
         if not self.epubs_page.old_epub:
             return
 
         book = epub.read_epub(self.epubs_page.old_epub)
 
-        for no, item in enumerate(list(filter(lambda i: isinstance(i, epub.EpubHtml), book.items))[5:], 1):
+        for item in list(filter(lambda i: isinstance(i, epub.EpubHtml), book.items)):
             tree = parse_html_string(item.content).getroottree()
 
-            titles = tree.xpath("//h1/strong/text()")
+            titles = tree.xpath("//title/text()")
             if titles:
                 title = titles[0]
+
+                m = no_and_title_pattern.match(title)
+                if m is None:
+                    continue
+                no, title = m.groups()
 
                 markers = []
                 marker = None
@@ -143,8 +153,9 @@ class ImportLyricsWizard(QWizard):
 
                         line_text = line_element.text
 
-                        if "sl" in line_element.attrib['class']:
-                            verse_no, line_text = line_text.split(". ", 1)
+                        m = new_verse_pattern.match(line_text)
+                        if m is not None:
+                            verse_no, line_text = m.groups()
                             if marker is not None:
                                 markers.append(marker)
 
