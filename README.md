@@ -7,3 +7,11 @@ To deploy execute the following in a terminal
     pyinstaller SongScreen.spec
 
 Of course you need to install [PyInstaller](http://pythonhosted.org/PyInstaller/) first.
+
+To enable high resolution rendering on MacOS you have to find the Info.plist file in the application package and
+add the following lines
+
+```xml
+<Key>NSHighResolutionCapable</key>
+<String>True</string>
+```
