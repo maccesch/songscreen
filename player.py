@@ -5,6 +5,7 @@ import os
 
 from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtCore import (pyqtSignal, QFileInfo, Qt,
                           QTime, QUrl, QTranslator, QLocale, QLibraryInfo)
 from PyQt5.QtGui import QFontDatabase, QIcon
@@ -188,7 +189,8 @@ class Player(QWidget):
 
     @property
     def lyrics_language_path(self):
-        return os.path.join(self.lyrics_path, self.settings['lyrics_language'])
+        path = QStandardPaths.locate(QStandardPaths.AppDataLocation, self.lyrics_path, QStandardPaths.LocateDirectory)
+        return os.path.join(path, self.settings['lyrics_language'])
 
     @property
     def available_song_numbers(self):
@@ -200,7 +202,7 @@ class Player(QWidget):
                  for filename in os.listdir(self.lyrics_language_path)
                  if filename[0] != '.']
             )
-        except ValueError as e:
+        except (ValueError, FileNotFoundError):
             lyrics = set()
 
         return sorted(list(audios.intersection(lyrics)))

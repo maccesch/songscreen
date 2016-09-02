@@ -2,6 +2,8 @@ import os
 import json
 
 import re
+
+from PyQt5.QtCore import QStandardPaths
 from ebooklib import epub
 from ebooklib.utils import parse_html_string
 from PyQt5.QtWidgets import QWizard, QWizardPage, QFormLayout, QLineEdit, QPushButton, QFileDialog
@@ -105,15 +107,20 @@ class ImportLyricsWizard(QWizard):
 
         self.language = self.field("language")
 
-        lyrics_path = os.path.join(self.lyrics_folder, self.language)
+        base_path = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+
+        lyrics_path = os.path.join(base_path, self.lyrics_folder, self.language)
 
         if self.old_language:
-            old_lyrics_path = os.path.join(self.lyrics_folder, self.old_language)
+            old_lyrics_path = os.path.join(base_path, self.lyrics_folder, self.old_language)
 
-            os.rename(old_lyrics_path, lyrics_path)
+            if os.path.exists(old_lyrics_path):
+                os.rename(old_lyrics_path, lyrics_path)
+            else:
+                os.makedirs(lyrics_path)
         else:
             if not os.path.exists(lyrics_path):
-                os.mkdir(lyrics_path)
+                os.makedirs(lyrics_path)
 
         self._import_old_epub(lyrics_path)
         self._import_new_epub(lyrics_path)
@@ -123,8 +130,8 @@ class ImportLyricsWizard(QWizard):
         self.close()
 
     def _import_old_epub(self, lyrics_path):
-        new_verse_pattern = re.compile(r"^(\d)\. (.+)$")
-        no_and_title_pattern = re.compile(r"\s*(\d+) (.+)$")
+        new_verse_pattern = re.compile(r"^\s*(\d)\.\s+(.+)$")
+        no_and_title_pattern = re.compile(r"^\s*(\d+)\s+(.+)$")
 
         if not self.epubs_page.old_epub:
             return

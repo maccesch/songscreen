@@ -1,20 +1,20 @@
 import os
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, QStandardPaths
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QComboBox, QPushButton
 
 from import_lyrics_wizard import ImportLyricsWizard
 
 
 class LanguageSelectWidget(QWidget):
-
     language_changed = pyqtSignal(str)
 
     def __init__(self, lyrics_path, current_language, *args, **kwargs):
 
         super(LanguageSelectWidget, self).__init__(*args, **kwargs)
 
-        self.lyrics_path = lyrics_path
+        self.lyrics_path = QStandardPaths.locate(QStandardPaths.AppDataLocation, lyrics_path,
+                                                 QStandardPaths.LocateDirectory)
         self.current_language = current_language
 
         layout = QVBoxLayout()
