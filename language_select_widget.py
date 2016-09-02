@@ -22,9 +22,12 @@ class LanguageSelectWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         languages = []
-        for filename in os.listdir(self.lyrics_path):
-            if filename != "timing" and os.path.isdir(os.path.join(self.lyrics_path, filename)):
-                languages.append(filename)
+        try:
+            for filename in os.listdir(self.lyrics_path):
+                if filename != "timing" and os.path.isdir(os.path.join(self.lyrics_path, filename)):
+                    languages.append(filename)
+        except FileNotFoundError:
+            pass
 
         self.languages_combo_box = QComboBox()
         self.languages_combo_box.addItems(sorted(languages) + [self.tr("New Language...")])
@@ -44,6 +47,9 @@ class LanguageSelectWidget(QWidget):
                                                        )
 
         self._editing_language = False
+
+        if not languages:
+            self.import_lyrics_wizard.open()
 
     def _language_changed(self, name):
 
@@ -78,7 +84,8 @@ class LanguageSelectWidget(QWidget):
 
     def _select_current_language(self):
         languages = [self.languages_combo_box.itemText(i) for i in range(self.languages_combo_box.count() - 1)]
-        self.languages_combo_box.setCurrentIndex(languages.index(self.current_language))
+        if languages:
+            self.languages_combo_box.setCurrentIndex(languages.index(self.current_language))
 
     def _edit_current_language(self):
         self._editing_language = True
